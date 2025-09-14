@@ -1,1 +1,2 @@
-# VHub_Activity
+# VHub_User_Activity
+*Описание пользвовательского функционала
