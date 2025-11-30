@@ -1,0 +1,84 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VHub.UserActivities.Host", "VHub.UserActivities.Host\VHub.UserActivities.Host.csproj", "{11286D17-7F32-4F7D-8F47-987E7831223F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{B09D8E95-F2D0-4FF2-AE85-0AA52DD9646A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{CF8C2FF5-3959-4F87-9D62-05179BD258FB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{46B54B91-FB7F-435F-90B1-A68E87AB586E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VHub.UserActivities.Domain", "VHub.UserActivities.Domain\VHub.UserActivities.Domain.csproj", "{E3F3497C-A1CE-4DDF-BCDC-9FFEC7E5B123}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VHub.UserActivities.Database.Configurations", "VHub.UserActivities.Database.Configurations\VHub.UserActivities.Database.Configurations.csproj", "{55EC7591-B8F4-4965-A351-14E4C409E485}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VHub.UserActivities.Database.Migrations", "VHub.UserActivities.Database.Migrations\VHub.UserActivities.Database.Migrations.csproj", "{D2AFA6E9-39BB-492E-820E-078B1D0EFD15}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{A26DAA64-6284-4B70-9251-A6262BA9454B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VHub.UserActivities.Application.Contracts", "VHub.UserActivities.Application.Contracts\VHub.UserActivities.Application.Contracts.csproj", "{EE52DF22-2A4B-479E-9256-5A0E71E3BA8C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VHub.UserActivities.Application", "VHub.UserActivities.Application\VHub.UserActivities.Application.csproj", "{2DF76A6D-E76C-468B-8132-95069AF8C7A2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{D7CE6F10-8957-4A3A-8471-7383DCCD77FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VHub.UserActivities.Common", "VHub.UserActivities.Common\VHub.UserActivities.Common.csproj", "{FDFA4AD2-9A7D-40CE-8EE2-85D2E13C224D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VHub.UserActivities.Api.Contracts", "VHub.UserActivities.Api.Contracts\VHub.UserActivities.Api.Contracts.csproj", "{FB46C220-3F9A-4470-A1FD-CA5F563DB97C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{DDDAA2B5-9EF3-415D-B1E5-C605B9C70A1D}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+		Dockerfile = Dockerfile
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{11286D17-7F32-4F7D-8F47-987E7831223F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11286D17-7F32-4F7D-8F47-987E7831223F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11286D17-7F32-4F7D-8F47-987E7831223F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11286D17-7F32-4F7D-8F47-987E7831223F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3F3497C-A1CE-4DDF-BCDC-9FFEC7E5B123}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3F3497C-A1CE-4DDF-BCDC-9FFEC7E5B123}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3F3497C-A1CE-4DDF-BCDC-9FFEC7E5B123}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3F3497C-A1CE-4DDF-BCDC-9FFEC7E5B123}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55EC7591-B8F4-4965-A351-14E4C409E485}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55EC7591-B8F4-4965-A351-14E4C409E485}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55EC7591-B8F4-4965-A351-14E4C409E485}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55EC7591-B8F4-4965-A351-14E4C409E485}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2AFA6E9-39BB-492E-820E-078B1D0EFD15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2AFA6E9-39BB-492E-820E-078B1D0EFD15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2AFA6E9-39BB-492E-820E-078B1D0EFD15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2AFA6E9-39BB-492E-820E-078B1D0EFD15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE52DF22-2A4B-479E-9256-5A0E71E3BA8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE52DF22-2A4B-479E-9256-5A0E71E3BA8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE52DF22-2A4B-479E-9256-5A0E71E3BA8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE52DF22-2A4B-479E-9256-5A0E71E3BA8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DF76A6D-E76C-468B-8132-95069AF8C7A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DF76A6D-E76C-468B-8132-95069AF8C7A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DF76A6D-E76C-468B-8132-95069AF8C7A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DF76A6D-E76C-468B-8132-95069AF8C7A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDFA4AD2-9A7D-40CE-8EE2-85D2E13C224D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDFA4AD2-9A7D-40CE-8EE2-85D2E13C224D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDFA4AD2-9A7D-40CE-8EE2-85D2E13C224D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDFA4AD2-9A7D-40CE-8EE2-85D2E13C224D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB46C220-3F9A-4470-A1FD-CA5F563DB97C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB46C220-3F9A-4470-A1FD-CA5F563DB97C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB46C220-3F9A-4470-A1FD-CA5F563DB97C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB46C220-3F9A-4470-A1FD-CA5F563DB97C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{11286D17-7F32-4F7D-8F47-987E7831223F} = {B09D8E95-F2D0-4FF2-AE85-0AA52DD9646A}
+		{E3F3497C-A1CE-4DDF-BCDC-9FFEC7E5B123} = {CF8C2FF5-3959-4F87-9D62-05179BD258FB}
+		{55EC7591-B8F4-4965-A351-14E4C409E485} = {46B54B91-FB7F-435F-90B1-A68E87AB586E}
+		{D2AFA6E9-39BB-492E-820E-078B1D0EFD15} = {46B54B91-FB7F-435F-90B1-A68E87AB586E}
+		{EE52DF22-2A4B-479E-9256-5A0E71E3BA8C} = {A26DAA64-6284-4B70-9251-A6262BA9454B}
+		{2DF76A6D-E76C-468B-8132-95069AF8C7A2} = {A26DAA64-6284-4B70-9251-A6262BA9454B}
+		{FDFA4AD2-9A7D-40CE-8EE2-85D2E13C224D} = {D7CE6F10-8957-4A3A-8471-7383DCCD77FC}
+		{FB46C220-3F9A-4470-A1FD-CA5F563DB97C} = {B09D8E95-F2D0-4FF2-AE85-0AA52DD9646A}
+	EndGlobalSection
+EndGlobal
