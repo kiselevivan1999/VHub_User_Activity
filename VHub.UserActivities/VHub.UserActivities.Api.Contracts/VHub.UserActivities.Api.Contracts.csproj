@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>VHub.UserActivities.Api.Contracts</PackageId>
+        <PackageVersion>1.0.0</PackageVersion>
+        <Authors>DevBeavers</Authors>
+        <Description>Публичные API контракты сервиса пользовательских активностей.</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/kiselevivan1999/VHub_User_Activity/tree/main/VHub.UserActivities/VHub.UserActivities.Api.Contracts</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/kiselevivan1999/VHub_User_Activity</RepositoryUrl>
+        <PackageTags>http;user;activities;api;contracts;</PackageTags>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="RestEase" Version="1.6.4" />
+        <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\VHub.UserActivities.Common\VHub.UserActivities.Common.csproj" />
+    </ItemGroup>
+    
+</Project>
