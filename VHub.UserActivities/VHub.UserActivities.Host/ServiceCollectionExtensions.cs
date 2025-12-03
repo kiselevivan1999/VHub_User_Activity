@@ -1,4 +1,8 @@
 using KafkaFlow;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 
 namespace VHub.UserActivities.Host;
 
@@ -27,5 +31,83 @@ public static class ServiceCollectionExtensions
         });
 
         return app;
+    }
+
+    public static IServiceCollection AddAuthenticationAndAuthorizationService(this IServiceCollection services,
+    IConfiguration configuration)
+    {
+        string authorizationIdentityServerUri = configuration.GetValue<string>("IdentityUrlName")!;
+
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
+            JwtBearerDefaults.AuthenticationScheme, conf =>
+            {
+                conf.Authority = authorizationIdentityServerUri;
+                conf.Audience = authorizationIdentityServerUri;
+                conf.BackchannelHttpHandler = new HttpClientHandler()
+                {
+                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                };
+
+                conf.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ClockSkew = TimeSpan.FromSeconds(40),
+                    ValidateAudience = false,
+                };
+            });
+
+        services.AddAuthorization(conf =>
+        {
+            conf.AddPolicy("Admin", policy =>
+            {
+                policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
+                policy.RequireClaim(ClaimTypes.Role, "admin");
+            });
+        });
+
+        return services;
+    }
+
+    public static IServiceCollection AddSwaggerService(this IServiceCollection services, IConfiguration configuration)
+    {
+        string authorizationIdentityServerUri = configuration.GetValue<string>("IdentityUrlName") + "connect/token";
+
+        services.AddSwaggerGen(conf =>
+        {
+            conf.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "VHub.UserActivities.Host.xml"));
+            conf.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme()
+            {
+                Type = SecuritySchemeType.OAuth2,
+                Flows = new OpenApiOAuthFlows()
+                {
+                    Password = new OpenApiOAuthFlow()
+                    {
+                        TokenUrl = new Uri(authorizationIdentityServerUri),
+                        Scopes = new Dictionary<string, string>()
+                        {
+                            {"vhub", string.Empty}
+                        }
+                    },
+                },
+            });
+
+            conf.AddSecurityRequirement(new OpenApiSecurityRequirement()
+            {
+                {
+                    new OpenApiSecurityScheme()
+                    {
+                        Reference = new OpenApiReference()
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        },
+                        Scheme = JwtBearerDefaults.AuthenticationScheme,
+                        In = ParameterLocation.Header,
+                    },
+                    new List<string>()
+                }
+            });
+        });
+
+        return services;
     }
 }

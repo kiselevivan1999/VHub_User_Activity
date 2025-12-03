@@ -5,16 +5,18 @@ using VHub.UserActivities.Api.Contracts.Controllers;
 using VHub.UserActivities.Api.Contracts.Reviews;
 using VHub.UserActivities.Application.Contracts.Reviews;
 using VHub.UserActivities.Application.Reviews.Handlers;
+using VHub.UserActivities.Host.Extensions;
 
 namespace VHub.UserActivities.Host.Controllers;
 
 [ApiController]
 [Authorize]
 [Route("user-activities/reviews")]
-public class ReviewsController(IReviewsHandler handler, IHttpContextAccessor httpContextAccessor) : ControllerBase, IReviewsController
+public class ReviewsController(IReviewsHandler handler, JwtTokenHalper jwtTokenHalper) : ControllerBase, IReviewsController
 {
     private readonly IReviewsHandler _handler = handler ?? throw new ArgumentNullException(nameof(handler));
-    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+    private readonly JwtTokenHalper _jwtTokenHalper = jwtTokenHalper;
+
 
     [HttpPost("new")]
     public async Task<long> CreateReviewAsync(
@@ -55,19 +57,10 @@ public class ReviewsController(IReviewsHandler handler, IHttpContextAccessor htt
     }
     
     [HttpGet("debug-claims")]
-    [AllowAnonymous] // Чтобы точно сработало
     public IActionResult DebugClaims()
     {
-        var authHeader = Request.Headers["Authorization"].FirstOrDefault();
-        var result = new
-        {
-            HasAuthHeader = !string.IsNullOrEmpty(authHeader),
-            AuthHeader = authHeader,
-            UserAuthenticated = User?.Identity?.IsAuthenticated ?? false,
-            ClaimsCount = User?.Claims.Count() ?? 0,
-            AllClaims = User?.Claims.Select(c => new { Type = c.Type, Value = c.Value }).ToList()
-        };
+        var userId = _jwtTokenHalper.GetUserId();
 
-        return Ok(result);
+        return Ok(userId);
     }
 }

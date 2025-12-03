@@ -4,6 +4,7 @@ using Serilog;
 using VHub.UserActivities.Application;
 using VHub.UserActivities.Database.Configurations;
 using VHub.UserActivities.Host;
+using VHub.UserActivities.Host.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpContextAccessor();
@@ -13,8 +14,10 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services
     .AddEndpointsApiExplorer()
-    .AddSwaggerGen()
-    .AddAppServices(builder.Configuration);
+    .AddSwaggerService(builder.Configuration)
+    .AddAuthenticationAndAuthorizationService(builder.Configuration)
+    .AddAppServices(builder.Configuration)
+    .AddScoped<JwtTokenHalper>();
 
 builder.Services.AddDbContext<UserActivitiesDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("vhub-ua-service-db-connection")));
@@ -22,7 +25,7 @@ builder.Services.AddDbContext<UserActivitiesDbContext>(options =>
 builder.Services.AddSerilog(config => config.ReadFrom.Configuration(builder.Configuration));
 
 var app = builder.Build();
-app.UseMiddleware<SimpleJwtMiddleware>();
+//app.UseMiddleware<SimpleJwtMiddleware>();
 
 TypeAdapterConfig.GlobalSettings.Default.PreserveReference(true);
 
