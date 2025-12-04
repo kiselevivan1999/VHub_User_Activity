@@ -64,13 +64,13 @@ internal class FavoriteOptionsRepository(UserActivitiesDbContext dbContext) : IF
             .ToArrayAsync(cancellationToken);
     }
 
-    public async Task WriteNotifyMessage(Guid[] userIds, string movieTitle)
+    public async Task WriteNotifyMessage(string[] users, string movieTitle)
     {
-        var entities = userIds.Select(userId => new ReviewEntity
+        var entities = users.Select(x => new ReviewEntity
         {
-            AuthorId = userId,
+            AuthorId = Guid.NewGuid(),
             MovieId = movieTitle,
-            Content = $"Уважаемый/ая {userId}, вышла новинка \"{movieTitle}\"! Скорее смотрите!",
+            Content = $"Уважаемый/ая {x}, вышла новинка \"{movieTitle}\"! Скорее смотрите!",
             CreatedAt = DateTime.Now,
         });
         
