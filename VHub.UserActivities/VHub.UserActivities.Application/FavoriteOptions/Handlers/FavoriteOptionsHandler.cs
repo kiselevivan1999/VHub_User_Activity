@@ -27,10 +27,4 @@ internal class FavoriteOptionsHandler(IFavoriteOptionsRepository repository) : I
         GenreType[] favoriteGenreTypes, string[] favoritePersonIds, CancellationToken cancellationToken) =>
         await _repository.GetUserIdsByFavoriteOptionsAsync(
             favoriteGenreTypes.Adapt<short[]>(), favoritePersonIds, cancellationToken);
-
-    // todo Удалить (тестовый метод)
-    public async Task WriteNotifyMessage(Guid[] userIds, string title)
-    {
-        await _repository.WriteNotifyMessage(userIds, title);
-    }
 }

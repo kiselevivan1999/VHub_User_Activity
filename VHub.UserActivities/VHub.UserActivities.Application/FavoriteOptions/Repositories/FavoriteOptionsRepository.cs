@@ -63,18 +63,4 @@ internal class FavoriteOptionsRepository(UserActivitiesDbContext dbContext) : IF
             .Distinct()
             .ToArrayAsync(cancellationToken);
     }
-
-    public async Task WriteNotifyMessage(Guid[] userIds, string movieTitle)
-    {
-        var entities = userIds.Select(userId => new ReviewEntity
-        {
-            AuthorId = userId,
-            MovieId = movieTitle,
-            Content = $"Уважаемый/ая {userId}, вышла новинка \"{movieTitle}\"! Скорее смотрите!",
-            CreatedAt = DateTime.Now,
-        });
-        
-        await _dbContext.AddRangeAsync(entities);
-        await _dbContext.SaveChangesAsync();
-    }
 }

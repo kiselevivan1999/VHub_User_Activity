@@ -1,17 +1,15 @@
 using System.Configuration;
 using KafkaFlow;
 using KafkaFlow.Serializer;
-using KafkaFlow.TypedHandler;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using VHub.Media.Api.Contracts.Movies.Events;
 using VHub.UserActivities.Application.Catalogs.Handlers;
 using VHub.UserActivities.Application.Catalogs.Repositories;
 using VHub.UserActivities.Application.FavoriteOptions.Handlers;
 using VHub.UserActivities.Application.FavoriteOptions.Repositories;
 using VHub.UserActivities.Application.MovieRates.Handlers;
 using VHub.UserActivities.Application.MovieRates.Repositories;
-using VHub.UserActivities.Application.Movies.Consumers;
+using VHub.UserActivities.Application.Movies.Producers;
 using VHub.UserActivities.Application.Reviews.Handlers;
 using VHub.UserActivities.Application.Reviews.Repositories;
 
@@ -31,7 +29,7 @@ public static class ServiceCollectionExtensions
         => services
             .AddScoped<ICatalogsRepository, CatalogsRepository>()
             .AddScoped<ICatalogsHandler, CatalogsHandler>();
-    
+
     private static IServiceCollection AddMovieRatesAppServices(this IServiceCollection services)
         => services
             .AddScoped<IMovieRatesRepository, MovieRatesRepository>()
@@ -41,17 +39,17 @@ public static class ServiceCollectionExtensions
         => services
             .AddScoped<IReviewsRepository, ReviewsRepository>()
             .AddScoped<IReviewsHandler, ReviewsHandler>();
-    
+
     private static IServiceCollection AddFavoriteOptionsAppServices(this IServiceCollection services)
         => services
             .AddScoped<IFavoriteOptionsRepository, FavoriteOptionsRepository>()
             .AddScoped<IFavoriteOptionsHandler, FavoriteOptionsHandler>();
-    
+
     public static IServiceCollection AddKafkaCluster(this IServiceCollection services, IConfiguration configuration)
     {
         var kafkaOptions = configuration.GetSection("Kafka");
         var kafkaServers = kafkaOptions["BootstrapServers"];
-        var consumerGroup = kafkaOptions["GroupId"] ?? "user-activities-group";
+        var consumerGroup = kafkaOptions["GroupId"] ?? "notifications-group";
 
         if (kafkaOptions == null)
         {
@@ -64,34 +62,19 @@ public static class ServiceCollectionExtensions
         }
 
         var servers = kafkaServers.Split(',');
-
+        services.AddScoped<IUsersNotificationRequestedProducer, UsersNotificationRequestedProducer>();
+        
         return services
             .AddKafka(kafka => kafka
                 .UseMicrosoftLog()
                 .AddCluster(cluster => cluster
                     .WithBrokers(servers)
-                    .AddConsumer(consumer => consumer
-                        .Topic("movie-created")
-                        .WithGroupId(consumerGroup)
-                        .WithBufferSize(10)
-                        .WithWorkersCount(1) // Количество параллельных обработчиков
-                        .WithAutoOffsetReset(AutoOffsetReset.Latest)
-                        .AddMiddlewares(middlewares => middlewares
-                            .AddSerializer<JsonCoreSerializer>()
-                            .AddTypedHandlers(handlers => handlers
-                                .WithHandlerLifetime(InstanceLifetime.Scoped)
-                                .AddHandler<MovieCreatedConsumer>()
-                                .WhenNoHandlerFound(context =>
-                                {
-                                    Console.WriteLine($"Message not handled > Partition: {0} | Offset: {1}",
-                                        context.ConsumerContext.Partition,
-                                        context.ConsumerContext.Offset);
-                                })
-                            ))
-                    )
-                )
-            )
-            // Регистрация сервисов
-            .AddScoped<IMessageHandler<MovieCreatedEvent>, MovieCreatedConsumer>();
+                    .AddProducer<UsersNotificationRequestedProducer>(producer =>
+                    {
+                        producer.AddMiddlewares(middlewares => middlewares
+                            .AddSerializer<JsonCoreSerializer>());
+                        producer.DefaultTopic("movie-created");
+                    })));
+
     }
 }
