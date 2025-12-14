@@ -14,6 +14,4 @@ public interface IFavoriteOptionsHandler
 
     Task<Guid[]> GetUserIdsByFavoriteOptionsAsync(
         GenreType[] favoriteGenreTypes, string[] favoritePersonIds, CancellationToken cancellationToken);
-
-    Task WriteNotifyMessage(string[] userIds, string str);
 }

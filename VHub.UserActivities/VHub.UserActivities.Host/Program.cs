@@ -53,6 +53,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-// app.UseKafkaBus(app.Lifetime);
+app.UseKafkaBus(app.Lifetime);
 
 app.Run();

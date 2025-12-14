@@ -6,7 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using VHub.Media.Api.Contracts.Movies.Events;
+using VHub.UserActivities.Application.Contracts.Events;
+using VHub.UserActivities.Application.Contracts.Users;
 using VHub.UserActivities.Application.FavoriteOptions.Handlers;
+using VHub.UserActivities.Application.Movies.Producers;
 using VHub.UserActivities.Common.Enums;
 using WebApi.Contracts;
 
@@ -17,23 +20,26 @@ public class MovieCreatedConsumer : BackgroundService
     private readonly IConfiguration _configuration;
     private readonly ILogger<MovieCreatedConsumer> _logger;
     private readonly IServiceProvider _serviceProvider;
-    private readonly WebApi.Contracts.IUserController _userController;
+    private readonly IUserController _userController;
+    private readonly IUsersNotificationRequestedProducer _usersNotificationRequestedProducer;
 
     public MovieCreatedConsumer(
         IConfiguration config,
         ILogger<MovieCreatedConsumer> logger,
         IServiceProvider serviceProvider,
-        IUserController userController)
+        IUserController userController,
+        IUsersNotificationRequestedProducer usersNotificationRequestedProducer)
     {
         _configuration = config;
         _logger = logger;
         _serviceProvider = serviceProvider;
         _userController = userController;
+        _usersNotificationRequestedProducer = usersNotificationRequestedProducer;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("🚀 Starting Kafka consumer...");
+        _logger.LogInformation("Старт обработки");
         
         var config = new ConsumerConfig
         {
@@ -43,7 +49,7 @@ public class MovieCreatedConsumer : BackgroundService
             EnableAutoCommit = false,
             EnableAutoOffsetStore = false,
             EnablePartitionEof = true,
-            AllowAutoCreateTopics = true
+            AllowAutoCreateTopics = true,
         };
         
         using var consumer = new ConsumerBuilder<Ignore, string>(config)
@@ -51,13 +57,12 @@ public class MovieCreatedConsumer : BackgroundService
                 _logger.LogError("Kafka error: {Reason}", error.Reason))
             .SetPartitionsAssignedHandler((_, partitions) =>
             {
-                _logger.LogInformation("✅ Assigned partitions: {Partitions}", 
+                _logger.LogInformation("Assigned partitions: {Partitions}", 
                     string.Join(", ", partitions));
             })
             .Build();
         
         consumer.Subscribe("movie-created");
-        _logger.LogInformation("✅ Subscribed to 'movie-created'");
         
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -65,14 +70,9 @@ public class MovieCreatedConsumer : BackgroundService
             {
                 var result = consumer.Consume(stoppingToken);
                 
-                if (result != null && !result.IsPartitionEOF)
+                if (result is { IsPartitionEOF: false })
                 {
-                    _logger.LogDebug("📨 Received (Offset: {Offset}, Partition: {Partition})", 
-                        result.Offset, result.Partition);
-                    
                     await ProcessMessageAsync(result.Message.Value);
-                    
-                    // Фиксируем offset
                     consumer.Commit(result);
                 }
             }
@@ -97,39 +97,32 @@ public class MovieCreatedConsumer : BackgroundService
 
     private async Task ProcessMessageAsync(string json)
     {
-// Десериализуем с теми же настройками, что и KafkaFlow (camelCase)
-        var movieEvent = JsonSerializer.Deserialize<MovieCreatedEvent>(
-            json);
+        var movieEvent = JsonSerializer.Deserialize<MovieCreatedEvent>(json);
             
         if (movieEvent == null)
         {
-            _logger.LogError("Failed to deserialize message: {Json}", json);
+            _logger.LogError("Ошибка десерилизации сообщения {EventName}: {Json}", nameof(MovieCreatedEvent), json);
             return;
         }
             
-        _logger.LogInformation("🎬 Processing: {MovieTitle}", movieEvent.MovieTitle);
-            
-        Console.WriteLine($"🎯 [FORCED LOG] Consumer started for movie: {json}");
-        _logger.LogInformation("Обработка консьюмера MovieCreatedConsumer...");
+        _logger.LogInformation("Обработка консьюмера MovieCreatedConsumer для фильма {MovieTitle}.", movieEvent.MovieTitle);
 
         using var scope = _serviceProvider.CreateScope();
                 
-        // Получаем зависимости из scope
         var scopedFavoriteOptionsHandler = scope.ServiceProvider
             .GetRequiredService<IFavoriteOptionsHandler>();
         
         var userIds = await scopedFavoriteOptionsHandler.GetUserIdsByFavoriteOptionsAsync(
             movieEvent.Genres.Adapt<GenreType[]>(), movieEvent.PersonIds, CancellationToken.None);
 
-        var users = (await _userController.GetByUserIds(userIds, CancellationToken.None))
-            .Select(x => x.UserName)
-            .ToArray();
-
-        _logger.LogInformation("Найдены следующие пользователи для оповещения: {users}", users);
+        var users = await _userController.GetByUserIds(userIds, CancellationToken.None);
         
-        _logger.LogInformation("Запись в таблицу Reviews.");
-        await scopedFavoriteOptionsHandler.WriteNotifyMessage(users, movieEvent.MovieTitle);
-        
-        // Отправка события об уведомлении пользователей в сервис VHub.Notifications.
+        var usersNotificationRequestedEvent = new UsersNotificationRequestedEvent()
+        {
+            Users = users.Adapt<UserBriefDto[]>(),
+            MovieTitle = movieEvent.MovieTitle,
+        };
+        await _usersNotificationRequestedProducer.SendUsersNotificationRequestedEvent(
+            usersNotificationRequestedEvent, CancellationToken.None);
     }
 }
