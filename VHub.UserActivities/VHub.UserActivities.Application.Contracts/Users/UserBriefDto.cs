@@ -6,11 +6,6 @@ namespace VHub.UserActivities.Application.Contracts.Users;
 public class UserBriefDto
 {
     /// <summary>
-    /// ID пользователя.
-    /// </summary>
-    public Guid Id { get; set; }
-
-    /// <summary>
     /// Имя пользователя.
     /// </summary>
     public string UserName { get; set; }
